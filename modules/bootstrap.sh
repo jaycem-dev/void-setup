@@ -147,9 +147,9 @@ create_filesystems() {
 
 	mkfs.btrfs -L root /dev/"$VG_NAME"/root
 
-	mount /dev/"$VG_NAME"/root "$MNT_DIR"
-	btrfs subvolume create "$MNT_DIR"/@home
-	umount "$MNT_DIR"
+	# mount /dev/"$VG_NAME"/root "$MNT_DIR"
+	# btrfs subvolume create "$MNT_DIR"/@home
+	# umount "$MNT_DIR"
 
 	mkswap -L swap /dev/"$VG_NAME"/swap
 	swapon /dev/"$VG_NAME"/swap
@@ -161,12 +161,8 @@ mount_filesystems() {
 	echo "==> Mounting filesystems to $MNT_DIR..."
 	echo "    Checking /dev/$VG_NAME/root:"
 	ls -la /dev/$VG_NAME/root 2>&1 || true
-	echo "    Mounting /dev/$VG_NAME/root to $MNT_DIR (subvol=@)"
-	mount -o subvol=@ /dev/"$VG_NAME"/root "$MNT_DIR" 2>&1 || die "Failed to mount root"
-
-	echo "    Mounting /dev/$VG_NAME/root to $MNT_DIR/home (subvol=@home)"
-	mkdir -p "$MNT_DIR"/home
-	mount -o subvol=@home /dev/"$VG_NAME"/root "$MNT_DIR"/home 2>&1 || die "Failed to mount home"
+	echo "    Mounting /dev/$VG_NAME/root to $MNT_DIR"
+	mount /dev/"$VG_NAME"/root "$MNT_DIR" 2>&1 || die "Failed to mount root"
 
 	echo "    Mounting /dev/${DISK}1 to $MNT_DIR/boot/efi"
 	mkdir -p "$MNT_DIR"/boot/efi
