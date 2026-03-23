@@ -10,7 +10,7 @@ source "$SCRIPT_DIR/lib/helpers.sh"
 # shellcheck disable=SC1091
 source "$SCRIPT_DIR/modules/bootstrap.sh"
 # shellcheck disable=SC1091
-source "$SCRIPT_DIR/modules/post.sh"
+source "$SCRIPT_DIR/modules/post_install.sh"
 
 if [[ "${1:-}" == "-h" ]]; then
 	cat <<EOF
