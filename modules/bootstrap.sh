@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-source "$SCRIPT_DIR/lib/globals.sh"
 # shellcheck disable=SC1091
 source "$SCRIPT_DIR/lib/keymap.sh"
 
