@@ -93,6 +93,8 @@ cleanup() {
 	lsblk -o NAME,SIZE,TYPE,FSTYPE "$DISK_PATH" 2>/dev/null || true
 	echo "    LVM status:"
 	lvs 2>/dev/null || true
+	echo "    /etc/default/grub (from installed system):"
+	xchroot "$MNT_DIR" cat /etc/default/grub 2>/dev/null || echo "    file missing"
 	echo "==> Cleaning up..."
 	umount -R "$MNT_DIR" 2>/dev/null || true
 	swapoff /dev/"$VG_NAME"/swap 2>/dev/null || true
@@ -250,7 +252,7 @@ setup_luks_keyfile() {
 install_bootloader() {
 	echo "==> Installing GRUB..."
 
-	xchroot "$MNT_DIR" grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=void --recheck
+	xchroot "$MNT_DIR" grub-install "/dev/$DISK"
 
 	echo "==> Generating initramfs..."
 	xchroot "$MNT_DIR" xbps-reconfigure -fa
