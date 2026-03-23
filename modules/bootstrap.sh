@@ -86,21 +86,12 @@ get_disk_path() {
 }
 
 cleanup() {
-	echo "==> DEBUG: cleanup called"
-	echo "    DISK=$DISK DISK_PATH=$DISK_PATH"
-	echo "    VG_NAME=$VG_NAME LUKS_UUID=$LUKS_UUID"
-	echo "    lsblk for disk:"
-	lsblk -o NAME,SIZE,TYPE,FSTYPE "$DISK_PATH" 2>/dev/null || true
-	echo "    LVM status:"
-	lvs 2>/dev/null || true
-	echo "    /etc/default/grub (from installed system):"
-	xchroot "$MNT_DIR" cat /etc/default/grub 2>/dev/null || echo "    file missing"
 	echo "==> Cleaning up..."
 	umount -R "$MNT_DIR" 2>/dev/null || true
 	swapoff /dev/"$VG_NAME"/swap 2>/dev/null || true
 	vgchange -an "$VG_NAME" 2>/dev/null || true
 	cryptsetup luksClose "$VG_NAME" 2>/dev/null || true
-	echo "==> Cleanup done"
+	echo "==> Done"
 }
 
 partition_disk() {
