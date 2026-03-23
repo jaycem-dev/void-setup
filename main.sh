@@ -13,10 +13,15 @@ source "$SCRIPT_DIR/modules/bootstrap.sh"
 source "$SCRIPT_DIR/modules/post.sh"
 
 if [[ "${1:-}" == "-h" ]]; then
-    cat <<EOF
-Usage: $(basename "$0") [module]
+	cat <<EOF
+Usage: $(basename "$0")
 
-Bootstrap a Void Linux installation with FDE (UEFI only)
+Setup a Void Linux installation with BTRFS and encryption
+
+OPTIONS:
+    1  Install Void Linux (bootstrap only)
+    2  Run post setup
+    3  Run both (full install)
 
 ENVIRONMENT VARIABLES:
     VG_NAME     Volume group name (default: cryptroot)
@@ -26,11 +31,36 @@ ENVIRONMENT VARIABLES:
 
 EXAMPLES:
     $(basename "$0")
+    $(basename "$0") <<< "3"
     SWAP_SIZE=8G $(basename "$0")
 EOF
-    exit 1
+	exit 1
 fi
 
-bootstrap_main
-post_main
-cleanup
+echo ""
+echo "    --> Void Installer Script"
+echo ""
+echo "1) Install Void Linux (UEFI, BTRFS, encryption)"
+echo "2) Run post setup (packages, dotfiles, etc.)"
+echo "3) Run both (full install)"
+echo ""
+read -rp "Select option (eg: 1): " option
+
+case "$option" in
+1)
+	bootstrap_main
+	cleanup
+	;;
+2)
+	post_main
+	cleanup
+	;;
+3)
+	bootstrap_main
+	post_main
+	cleanup
+	;;
+*)
+	die "Invalid option: $option"
+	;;
+esac

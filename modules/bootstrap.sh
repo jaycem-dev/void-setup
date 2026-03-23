@@ -3,6 +3,62 @@
 # shellcheck disable=SC1091
 source "$SCRIPT_DIR/lib/keymap.sh"
 
+configure_system() {
+	echo "==> Configuring system..."
+
+	echo "$HOSTNAME" >"$MNT_DIR"/etc/hostname
+	echo "LANG=en_US.UTF-8" >"$MNT_DIR"/etc/locale.conf
+	echo "en_US.UTF-8 UTF-8" >>"$MNT_DIR"/etc/default/libc-locales
+
+	xchroot "$MNT_DIR" bash -c '
+		if grep -q "^GRUB_ENABLE_CRYPTODISK=" /etc/default/grub; then
+			sed -i "s/^#\?GRUB_ENABLE_CRYPTODISK=.*/GRUB_ENABLE_CRYPTODISK=y/" /etc/default/grub
+		else
+			echo "GRUB_ENABLE_CRYPTODISK=y" >> /etc/default/grub
+		fi
+	'
+
+	xchroot "$MNT_DIR" bash -c "
+		if grep -q \"^GRUB_CMDLINE_LINUX_DEFAULT=\" /etc/default/grub; then
+			sed -i \"s|^#\?GRUB_CMDLINE_LINUX_DEFAULT=.*|GRUB_CMDLINE_LINUX_DEFAULT=\\\"quiet loglevel=3 rd.luks.uuid=$LUKS_UUID rd.lvm.vg=$VG_NAME\\\"|\" /etc/default/grub
+		else
+			echo \"GRUB_CMDLINE_LINUX_DEFAULT=\\\"quiet loglevel=3 rd.luks.uuid=$LUKS_UUID rd.lvm.vg=$VG_NAME\\\"\" >> /etc/default/grub
+		fi
+	"
+
+	echo "==> System configuration complete"
+}
+
+setup_users() {
+	echo "==> Setting up users..."
+	echo "ROOT USER"
+	echo "Password for root user: "
+	xchroot "$MNT_DIR" passwd
+
+	echo ""
+	echo "REGULAR USER"
+	read -rp "Username: " USERNAME
+	[[ -n "$USERNAME" ]] || die "Username is required"
+	xchroot "$MNT_DIR" useradd -m -G wheel,users,audio,video,kvm,xbuilder "$USERNAME"
+
+	echo ""
+	echo "Password for $USERNAME: "
+	xchroot "$MNT_DIR" passwd "$USERNAME"
+
+	echo "==> User setup complete"
+}
+
+install_bootloader() {
+	echo "==> Installing GRUB..."
+
+	xchroot "$MNT_DIR" grub-install "/dev/$DISK"
+
+	echo "==> Generating initramfs..."
+	xchroot "$MNT_DIR" xbps-reconfigure -fa
+
+	echo "==> Bootloader installation complete"
+}
+
 DISK=""
 DISK_PATH=""
 LUKS_UUID=""
@@ -100,27 +156,6 @@ create_filesystems() {
 	swapon /dev/"$VG_NAME"/swap
 
 	echo "==> Filesystems created"
-}
-
-mount_filesystems() {
-	echo "==> Mounting filesystems to $MNT_DIR..."
-
-	echo "    Mounting /dev/$VG_NAME/root to $MNT_DIR (subvol=@)"
-	mount -o subvol=@ /dev/"$VG_NAME"/root "$MNT_DIR" 2>&1 || die "Failed to mount root"
-
-	echo "    Mounting /dev/$VG_NAME/root to $MNT_DIR/home (subvol=@home)"
-	mkdir -p "$MNT_DIR"/home
-	mount -o subvol=@home /dev/"$VG_NAME"/root "$MNT_DIR"/home 2>&1 || die "Failed to mount home"
-
-	echo "    Mounting /dev/$VG_NAME/root to $MNT_DIR/.snapshots (subvol=@snapshots)"
-	mkdir -p "$MNT_DIR"/.snapshots
-	mount -o subvol=@snapshots /dev/"$VG_NAME"/root "$MNT_DIR"/.snapshots 2>&1 || die "Failed to mount snapshots"
-
-	echo "    Mounting /dev/${DISK}1 to $MNT_DIR/boot/efi"
-	mkdir -p "$MNT_DIR"/boot/efi
-	mount /dev/"${DISK}1" "$MNT_DIR"/boot/efi 2>&1 || die "Failed to mount efi"
-
-	echo "==> Filesystems mounted"
 }
 
 install_base() {

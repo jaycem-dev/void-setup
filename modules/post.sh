@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
 
-# shellcheck disable=SC1091
-source "$SCRIPT_DIR/../lib/system.sh"
-# shellcheck disable=SC1091
-source "$SCRIPT_DIR/../lib/users.sh"
-# shellcheck disable=SC1091
-source "$SCRIPT_DIR/../lib/bootloader.sh"
-
 post_main() {
 	echo ""
-	echo "==> Starting post-install configuration with xchroot..."
-	echo "==> Post-install complete"
+	warn "This assumes the system was installed using this script"
+	echo "==> Opening LUKS container..."
+	cryptsetup luksOpen /dev/"${DISK}2" "$VG_NAME"
+
+	echo "==> Activating LVM volumes..."
+	vgchange -ay
+
+	mount_filesystems
+
+	echo "==> Post-install (placeholder)"
 }
