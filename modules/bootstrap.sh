@@ -89,9 +89,9 @@ cleanup() {
 	echo "==> DEBUG: cleanup called"
 	echo "    DISK=$DISK DISK_PATH=$DISK_PATH"
 	echo "    VG_NAME=$VG_NAME LUKS_UUID=$LUKS_UUID"
-	echo "    LVM paths: /dev/$VG_NAME/root /dev/mapper/$VG_NAME-root"
-	ls -la /dev/mapper/ 2>/dev/null || true
-	ls -la /dev/$VG_NAME/ 2>/dev/null || true
+	echo "    lsblk for disk:"
+	lsblk -o NAME,SIZE,TYPE,FSTYPE "$DISK_PATH" 2>/dev/null || true
+	echo "    LVM status:"
 	lvs 2>/dev/null || true
 	echo "==> Cleaning up..."
 	umount -R "$MNT_DIR" 2>/dev/null || true
@@ -159,12 +159,14 @@ create_filesystems() {
 
 mount_filesystems() {
 	echo "==> Mounting filesystems to $MNT_DIR..."
-
+	echo "    Mounting /dev/$VG_NAME/root to $MNT_DIR (subvol=@)"
 	mount -o subvol=@ /dev/"$VG_NAME"/root "$MNT_DIR"
 
+	echo "    Mounting /dev/$VG_NAME/root to $MNT_DIR/home (subvol=@home)"
 	mkdir -p "$MNT_DIR"/home
 	mount -o subvol=@home /dev/"$VG_NAME"/root "$MNT_DIR"/home
 
+	echo "    Mounting /dev/${DISK}1 to $MNT_DIR/boot/efi"
 	mkdir -p "$MNT_DIR"/boot/efi
 	mount /dev/"${DISK}1" "$MNT_DIR"/boot/efi
 
