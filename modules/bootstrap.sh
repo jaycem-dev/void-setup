@@ -210,9 +210,16 @@ configure_system() {
 	echo "LANG=en_US.UTF-8" >"$MNT_DIR"/etc/locale.conf
 	echo "en_US.UTF-8 UTF-8" >>"$MNT_DIR"/etc/default/libc-locales
 
+	echo "    DEBUG: checking /etc/default/grub"
+	echo "    DEBUG: file exists: $([[ -f $MNT_DIR/etc/default/grub ]] && echo yes || echo no)"
+	cat "$MNT_DIR"/etc/default/grub 2>/dev/null || echo "    DEBUG: file missing"
+
 	sed -i 's/^#\?GRUB_ENABLE_CRYPTODISK=.*/GRUB_ENABLE_CRYPTODISK=y/' "$MNT_DIR"/etc/default/grub
 
 	sed -i "s|^#\?GRUB_CMDLINE_LINUX_DEFAULT=.*|GRUB_CMDLINE_LINUX_DEFAULT=\"quiet loglevel=3 rd.luks.uuid=$LUKS_UUID rd.lvm.vg=$VG_NAME\"|" "$MNT_DIR"/etc/default/grub
+
+	echo "    DEBUG: after sed:"
+	cat "$MNT_DIR"/etc/default/grub 2>/dev/null || echo "    DEBUG: still missing"
 
 	echo "==> System configuration complete"
 }
