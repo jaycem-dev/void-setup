@@ -99,7 +99,7 @@ partition_disk() {
     sfdisk --wipe always "$DISK_PATH" <<EOF
 label: gpt
 /dev/${DISK}1 : start=2048, size=${EFI_SIZE}, type=C12A7328-F81F-11D2-BA4B-00A0C93EC93B, name="EFI"
-/dev/${DISK}2 : start=264192, type=0FC63DAF-8483-4772-8E79-3D69D8477DE4, name="Linux"
+/dev/${DISK}2 : type=0FC63DAF-8483-4772-8E79-3D69D8477DE4, name="Linux"
 EOF
 
     echo "==> Partitioning complete"
