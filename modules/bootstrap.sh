@@ -147,9 +147,11 @@ create_filesystems() {
 
 	mkfs.btrfs -L root /dev/"$VG_NAME"/root
 
-	# mount /dev/"$VG_NAME"/root "$MNT_DIR"
-	# btrfs subvolume create "$MNT_DIR"/@home
-	# umount "$MNT_DIR"
+	mount /dev/"$VG_NAME"/root "$MNT_DIR"
+	btrfs subvolume create "$MNT_DIR"/@
+	btrfs subvolume create "$MNT_DIR"/@home
+	btrfs subvolume create "$MNT_DIR"/@snapshots
+	umount "$MNT_DIR"
 
 	mkswap -L swap /dev/"$VG_NAME"/swap
 	swapon /dev/"$VG_NAME"/swap
@@ -159,10 +161,17 @@ create_filesystems() {
 
 mount_filesystems() {
 	echo "==> Mounting filesystems to $MNT_DIR..."
-	echo "    Checking /dev/$VG_NAME/root:"
-	ls -la /dev/$VG_NAME/root 2>&1 || true
-	echo "    Mounting /dev/$VG_NAME/root to $MNT_DIR"
-	mount /dev/"$VG_NAME"/root "$MNT_DIR" 2>&1 || die "Failed to mount root"
+
+	echo "    Mounting /dev/$VG_NAME/root to $MNT_DIR (subvol=@)"
+	mount -o subvol=@ /dev/"$VG_NAME"/root "$MNT_DIR" 2>&1 || die "Failed to mount root"
+
+	echo "    Mounting /dev/$VG_NAME/root to $MNT_DIR/home (subvol=@home)"
+	mkdir -p "$MNT_DIR"/home
+	mount -o subvol=@home /dev/"$VG_NAME"/root "$MNT_DIR"/home 2>&1 || die "Failed to mount home"
+
+	echo "    Mounting /dev/$VG_NAME/root to $MNT_DIR/.snapshots (subvol=@snapshots)"
+	mkdir -p "$MNT_DIR"/.snapshots
+	mount -o subvol=@snapshots /dev/"$VG_NAME"/root "$MNT_DIR"/.snapshots 2>&1 || die "Failed to mount snapshots"
 
 	echo "    Mounting /dev/${DISK}1 to $MNT_DIR/boot/efi"
 	mkdir -p "$MNT_DIR"/boot/efi
@@ -229,7 +238,7 @@ setup_luks_keyfile() {
 install_bootloader() {
 	echo "==> Installing GRUB..."
 
-	grub-install "/dev/$DISK" --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=void --recheck
+	xchroot "$MNT_DIR" grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=void --recheck
 
 	echo "==> Generating initramfs..."
 	xchroot "$MNT_DIR" xbps-reconfigure -fa
