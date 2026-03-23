@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-# shellcheck disable=SC1091
-source "$SCRIPT_DIR/lib/keymap.sh"
-
 configure_system() {
 	echo "==> Configuring system..."
 
@@ -58,10 +55,6 @@ install_bootloader() {
 
 	echo "==> Bootloader installation complete"
 }
-
-DISK=""
-DISK_PATH=""
-LUKS_UUID=""
 
 prompt_disk() {
 	echo ""
@@ -214,7 +207,6 @@ bootstrap_main() {
 	mount_filesystems
 	install_base
 	generate_fstab
-	setup_keymap
 	configure_system
 	setup_luks_keyfile
 	install_bootloader
