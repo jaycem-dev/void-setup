@@ -1,12 +1,8 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
-
-VG_NAME="${VG_NAME:-cryptroot}"
-EFI_SIZE="${EFI_SIZE:-1G}"
-SWAP_SIZE="${SWAP_SIZE:-4G}"
-REPO_URL="${REPO_URL:-https://repo-fastly.voidlinux.org/current}"
-MNT_DIR="/mnt"
+source "$SCRIPT_DIR/lib/globals.sh"
+# shellcheck disable=SC1091
+source "$SCRIPT_DIR/lib/keymap.sh"
 
 DISK=""
 DISK_PATH=""
@@ -17,49 +13,13 @@ prompt_disk() {
 	echo "Available drives:"
 	lsblk -o NAME,SIZE,TYPE | grep -E '^NAME|disk'
 	echo ""
-	read -p "Target disk (e.g., sda, nvme0n1): " DISK
+	read -rp "Target disk (e.g., sda, nvme0n1): " DISK
 	[[ -n "$DISK" ]] || die "Disk is required"
 }
 
 prompt_hostname() {
-	read -p "Hostname (default: void): " hostname_input
+	read -rp "Hostname (default: void): " hostname_input
 	HOSTNAME="${hostname_input:-void}"
-}
-
-usage() {
-	cat <<EOF
-Usage: $(basename "$0")
-
-Bootstrap a Void Linux installation with FDE (UEFI only)
-
-ENVIRONMENT VARIABLES:
-    VG_NAME     Volume group name (default: cryptroot)
-    EFI_SIZE    EFI partition size (default: 1G)
-    SWAP_SIZE   Swap size (default: 4G)
-    REPO_URL    XBPS repository URL (default: repo-fastly.voidlinux.org)
-
-EXAMPLES:
-    $(basename "$0")
-    SWAP_SIZE=8G $(basename "$0")
-EOF
-	exit 1
-}
-
-warn() {
-	echo "WARNING: $*" >&2
-}
-
-die() {
-	echo "ERROR: $*" >&2
-	exit 1
-}
-
-check_root() {
-	[[ $EUID -eq 0 ]] || die "This script must be run as root"
-}
-
-check_command() {
-	command -v "$1" &>/dev/null || die "Required command '$1' not found. Please install it."
 }
 
 check_dependencies() {
@@ -83,15 +43,6 @@ get_disk_path() {
 	fi
 	[[ -b "$disk_path" ]] || die "$disk_path is not a block device"
 	echo "$disk_path"
-}
-
-cleanup() {
-	echo "==> Cleaning up..."
-	umount -R "$MNT_DIR" 2>/dev/null || true
-	swapoff /dev/"$VG_NAME"/swap 2>/dev/null || true
-	vgchange -an "$VG_NAME" 2>/dev/null || true
-	cryptsetup luksClose "$VG_NAME" 2>/dev/null || true
-	echo "==> Done"
 }
 
 partition_disk() {
@@ -196,32 +147,6 @@ generate_fstab() {
 	echo "==> fstab generated"
 }
 
-configure_system() {
-	echo "==> Configuring system..."
-
-	echo "$HOSTNAME" >"$MNT_DIR"/etc/hostname
-	echo "LANG=en_US.UTF-8" >"$MNT_DIR"/etc/locale.conf
-	echo "en_US.UTF-8 UTF-8" >>"$MNT_DIR"/etc/default/libc-locales
-
-	xchroot "$MNT_DIR" bash -c '
-		if grep -q "^GRUB_ENABLE_CRYPTODISK=" /etc/default/grub; then
-			sed -i "s/^#\?GRUB_ENABLE_CRYPTODISK=.*/GRUB_ENABLE_CRYPTODISK=y/" /etc/default/grub
-		else
-			echo "GRUB_ENABLE_CRYPTODISK=y" >> /etc/default/grub
-		fi
-	'
-
-	xchroot "$MNT_DIR" bash -c "
-		if grep -q \"^GRUB_CMDLINE_LINUX_DEFAULT=\" /etc/default/grub; then
-			sed -i \"s|^#\?GRUB_CMDLINE_LINUX_DEFAULT=.*|GRUB_CMDLINE_LINUX_DEFAULT=\\\"quiet loglevel=3 rd.luks.uuid=$LUKS_UUID rd.lvm.vg=$VG_NAME\\\"|\" /etc/default/grub
-		else
-			echo \"GRUB_CMDLINE_LINUX_DEFAULT=\\\"quiet loglevel=3 rd.luks.uuid=$LUKS_UUID rd.lvm.vg=$VG_NAME\\\"\" >> /etc/default/grub
-		fi
-	"
-
-	echo "==> System configuration complete"
-}
-
 setup_luks_keyfile() {
 	echo "==> Setting up keyfile for automatic unlock..."
 
@@ -240,30 +165,13 @@ setup_luks_keyfile() {
 	echo "==> Keyfile setup complete"
 }
 
-install_bootloader() {
-	echo "==> Installing GRUB..."
-
-	xchroot "$MNT_DIR" grub-install "/dev/$DISK"
-
-	echo "==> Generating initramfs..."
-	xchroot "$MNT_DIR" xbps-reconfigure -fa
-
-	echo "==> Bootloader installation complete"
-}
-
-main() {
-	if [[ $# -eq 1 && "$1" == "-h" ]]; then
-		usage
-	fi
-
+bootstrap_main() {
 	check_root
 	check_dependencies
 
 	prompt_disk
 	prompt_hostname
 	DISK_PATH=$(get_disk_path "$DISK")
-
-	trap cleanup EXIT
 
 	partition_disk "$DISK_PATH"
 	setup_luks "${DISK_PATH}2"
@@ -272,13 +180,13 @@ main() {
 	mount_filesystems
 	install_base
 	generate_fstab
+	setup_keymap
 	configure_system
 	setup_luks_keyfile
 	install_bootloader
+	setup_users
 
 	echo ""
 	echo "==> Bootstrap complete! System ready for post-install configuration."
 	echo "==> Mount point: $MNT_DIR"
 }
-
-main "$@"
