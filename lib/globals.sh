@@ -9,3 +9,7 @@ MNT_DIR="${MNT_DIR:-/mnt}"
 DISK=""
 DISK_PATH=""
 LUKS_UUID=""
+
+DOTFILES_REPO="${DOTFILES_REPO:-https://github.com/jaycem-dev/dotfiles}"
+
+USERNAME=""
