@@ -9,10 +9,9 @@ INSTALL_DIR="/tmp/void-setup.$$"
 
 echo "==> Downloading installer..."
 wget -qO- "$REPO_URL/archive/refs/heads/master.tar.gz" | tar -xz -C /tmp
-mv /tmp/void-setup-main "$INSTALL_DIR"
 
 echo "==> Running installer..."
-cd "$INSTALL_DIR"
+cd /tmp/void-setup-master
 bash main.sh "$@"
 EXIT_CODE=$?
 
