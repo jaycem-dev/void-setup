@@ -12,6 +12,8 @@ source "$SCRIPT_DIR/modules/bootstrap.sh"
 # shellcheck disable=SC1091
 source "$SCRIPT_DIR/modules/post_install.sh"
 
+trap cleanup EXIT INT TERM
+
 if [[ "${1:-}" == "-h" ]]; then
 	cat <<EOF
 Usage: $(basename "$0")
@@ -49,16 +51,13 @@ read -rp "Select option (eg: 1): " option
 case "$option" in
 1)
 	bootstrap_main
-	cleanup
 	;;
 2)
 	post_main
-	cleanup
 	;;
 3)
 	bootstrap_main
 	post_main
-	cleanup
 	;;
 *)
 	die "Invalid option: $option"
