@@ -17,13 +17,6 @@ A script to bootstrap a UEFI Void Linux installation with BTRFS and encryption.
 3. Run both (full install)
 
 ```bash
-sudo xbps-install -S curl
-curl -fsSL https://raw.githubusercontent.com/jaycem-dev/void-setup/master/install.sh | bash
-```
-
-Or with wget:
-
-```bash
 sudo xbps-install -S wget
 wget -O - https://raw.githubusercontent.com/jaycem-dev/void-setup/master/install.sh | bash
 ```

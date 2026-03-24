@@ -8,7 +8,7 @@ REPO_URL="${REPO_URL:-https://github.com/jaycem-dev/void-setup}"
 INSTALL_DIR="/tmp/void-setup.$$"
 
 echo "==> Downloading installer..."
-curl -fsSL "$REPO_URL/archive/refs/heads/master.tar.gz" | tar -xz -C /tmp
+wget -qO- "$REPO_URL/archive/refs/heads/master.tar.gz" | tar -xz -C /tmp
 mv /tmp/void-setup-main "$INSTALL_DIR"
 
 echo "==> Running installer..."
