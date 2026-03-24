@@ -97,8 +97,6 @@ install_pkgs() {
         udiskie
         pavucontrol
         nwg-look
-        kwallet
-        kwalletmanager
 
         ### dev ###
         # tools
