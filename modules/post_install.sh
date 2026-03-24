@@ -35,7 +35,7 @@ install_pkgs() {
 setup_dotfiles() {
 	echo "==> Setting up dotfiles..."
 	local dotfiles_dir="/home/$USERNAME/dev/dotfiles"
-	if [[ -d "$dotfiles_dir" ]]; then
+	if $XCHROOT test -d "$dotfiles_dir"; then
 		echo "Dotfiles already exist, skipping clone"
 	else
 		$XCHROOT git clone "$DOTFILES_REPO" "$dotfiles_dir"
