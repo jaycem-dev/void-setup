@@ -5,70 +5,75 @@
 # This allows post installation to run on a live ISO or an installed system
 
 prompt_username() {
-    if [[ -z "$USERNAME" ]]; then
-        echo "Username variable not set"
-        read -rp "Username of the user created (eg: void): " USERNAME
-    else
-        echo "Username created: $USERNAME"
-    fi
+	if [[ -z "$USERNAME" ]]; then
+		echo "Username variable not set"
+		read -rp "Username of the user created (eg: void): " USERNAME
+	else
+		echo "Username created: $USERNAME"
+	fi
 }
 
 setup_keymap() {
-    echo "==> Configuring keymap..."
-    if grep -q "^KEYMAP=" "$MNT_DIR/etc/rc.conf" 2>/dev/null; then
-        sed -i 's|^KEYMAP=.*|KEYMAP="i386/colemak/mod-dh-iso-us"|' "$MNT_DIR/etc/rc.conf"
-    else
-        echo 'KEYMAP="i386/colemak/mod-dh-iso-us"' >>"$MNT_DIR/etc/rc.conf"
-    fi
+	echo "==> Configuring keymap..."
+	if grep -q "^KEYMAP=" "$MNT_DIR/etc/rc.conf" 2>/dev/null; then
+		sed -i 's|^KEYMAP=.*|KEYMAP="i386/colemak/mod-dh-iso-us"|' "$MNT_DIR/etc/rc.conf"
+	else
+		echo 'KEYMAP="i386/colemak/mod-dh-iso-us"' >>"$MNT_DIR/etc/rc.conf"
+	fi
 }
 
 install_pkgs() {
-    echo "==> Installing packages..."
-    local pkgs=(
-        "neovim"
-        "btop"
-    )
-    $XCHROOT xbps-install -Sy "${pkgs[@]}"
-    echo "==> Packages installed"
+	echo "==> Installing packages..."
+	local pkgs=(
+		"neovim"
+		"btop"
+	)
+	$XCHROOT xbps-install -Sy "${pkgs[@]}"
+	echo "==> Packages installed"
 }
 
 setup_dotfiles() {
-    echo "==> Setting up dotfiles..."
-    $XCHROOT git clone "$DOTFILES_REPO" /home/"$USERNAME"/dev/dotfiles
-    $XCHROOT ln -sf /home/"$USERNAME"/dev/dotfiles /home/"$USERNAME"/.config
-    $XCHROOT chown -R "$USERNAME":"$USERNAME" /home/"$USERNAME"
-    echo "==> Dotfiles setup complete"
+	echo "==> Setting up dotfiles..."
+	local dotfiles_dir="/home/$USERNAME/dev/dotfiles"
+	if [[ -d "$dotfiles_dir" ]]; then
+		echo "Dotfiles already exist, skipping clone"
+	else
+		$XCHROOT git clone "$DOTFILES_REPO" "$dotfiles_dir"
+	fi
+	$XCHROOT ln -sf "$dotfiles_dir" /home/"$USERNAME"/.config
+	$XCHROOT chown -R "$USERNAME":"$USERNAME" "$dotfiles_dir"
+	echo "==> Dotfiles setup complete"
 }
 
 detect_env() {
-    # Detect live ISO by checking root filesystem label
-    if df -h / | grep -q "LiveISO"; then
-        XCHROOT="xchroot $MNT_DIR"
-    else
-        XCHROOT=""
-    fi
+	# Detect live ISO by checking root filesystem label
+	if df -h / | grep -q "LiveISO"; then
+		XCHROOT="xchroot $MNT_DIR"
+	else
+		XCHROOT=""
+	fi
 }
 
 post_main() {
-    detect_env
+	detect_env
 
-    if [[ -n "$XCHROOT" ]]; then
-        echo ""
-        warn "This assumes the system was installed using this script."
-        echo "==> Opening LUKS container..."
-        cryptsetup luksOpen /dev/"${DISK}2" "$VG_NAME"
+	if [[ -n "$XCHROOT" ]]; then
+		echo ""
+		warn "This assumes the system was installed using this script."
+		echo "==> Opening LUKS container..."
+		cryptsetup luksOpen /dev/"${DISK}2" "$VG_NAME"
 
-        echo "==> Activating LVM volumes..."
-        vgchange -ay
+		echo "==> Activating LVM volumes..."
+		vgchange -ay
 
-        mount_filesystems
-    fi
+		mount_filesystems
+	fi
 
-    echo "==> Running post-install configuration..."
-    prompt_username
-    setup_keymap
-    install_pkgs
-    setup_dotfiles
+	echo "==> Running post-install configuration..."
+	prompt_username
+	setup_keymap
+	install_pkgs
+	setup_dotfiles
 
-    echo "==> Post-install configuration complete"
+	echo "==> Post-install configuration complete"
 }
