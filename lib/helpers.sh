@@ -10,7 +10,7 @@ die() {
 }
 
 check_root() {
-    [[ $EUID -eq 0 ]] || die "This script must be run as root"
+    [[ $EUID -eq 0 ]] || die "This script must be run as root."
 }
 
 check_command() {
