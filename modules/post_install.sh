@@ -41,7 +41,7 @@ setup_dotfiles() {
 		$XCHROOT git clone "$DOTFILES_REPO" "$dotfiles_dir"
 	fi
 	$XCHROOT ln -sf "$dotfiles_dir" /home/"$USERNAME"/.config
-	$XCHROOT chown -R "$USERNAME":"$USERNAME" "$dotfiles_dir"
+	$XCHROOT chown -R "$USERNAME" "$dotfiles_dir"
 	echo "==> Dotfiles setup complete"
 }
 
