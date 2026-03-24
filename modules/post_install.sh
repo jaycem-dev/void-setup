@@ -47,7 +47,7 @@ setup_dotfiles() {
 
 detect_env() {
 	# Detect live ISO by checking root filesystem label
-	if df -h / | grep -q "LiveISO"; then
+	if df -h / | grep -q "LiveOS"; then
 		XCHROOT="xchroot $MNT_DIR"
 	else
 		XCHROOT=""
