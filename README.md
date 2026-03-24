@@ -2,6 +2,9 @@
 
 A script to bootstrap a UEFI Void Linux installation with BTRFS and encryption.
 
+> [!WARNING]
+> This script is a work in progress and not yet ready for use.
+
 ## Install
 
 > [!WARNING]
