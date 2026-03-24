@@ -62,7 +62,7 @@ install_pkgs() {
         gnome-keyring seahorse
         polkit-gnome
         Signal-Desktop
-        thunar thunar-archive-plugin thunar-volman
+        Thunar thunar-archive-plugin thunar-volman
         power-profiles-daemon
         virt-manager
         jellyfin-desktop
@@ -87,7 +87,7 @@ install_pkgs() {
         noto-fonts-ttf-extra
         noto-fonts-emoji
         liberation-fonts-ttf # Times, Arial and Courier
-        dejavu_fonts-ttf
+        dejavu-fonts-ttf
         nerd-fonts-symbols-ttf
 
         udiskie
