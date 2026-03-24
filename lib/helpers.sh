@@ -46,14 +46,17 @@ cleanup() {
     else
         echo "ERROR: Something went wrong. Cleaning up..."
     fi
-    echo "    Unmounting filesystems..."
-    umount -R "$MNT_DIR" 2>/dev/null || true
-    echo "    Disabling swap..."
-    swapoff /dev/"$VG_NAME"/swap 2>/dev/null || true
-    echo "    Deactivating LVM..."
-    vgchange -an "$VG_NAME" 2>/dev/null || true
-    echo "    Closing LUKS..."
-    cryptsetup luksClose "$VG_NAME" 2>/dev/null || true
+
+    if [[ -n "$XCHROOT" ]]; then
+        echo "    Disabling swap..."
+        swapoff /dev/"$VG_NAME"/swap || true
+        echo "    Unmounting filesystems (lazy)..."
+        umount -lR "$MNT_DIR" || true
+        echo "    Deactivating LVM..."
+        vgchange -an "$VG_NAME" || true
+        echo "    Closing LUKS..."
+        cryptsetup luksClose "$VG_NAME" || true
+    fi
     echo "==> Done"
 }
 
@@ -61,19 +64,27 @@ mount_filesystems() {
     echo "==> Mounting filesystems to $MNT_DIR..."
 
     echo "    Mounting /dev/$VG_NAME/root to $MNT_DIR (subvol=@)"
-    mount -o subvol=@ /dev/"$VG_NAME"/root "$MNT_DIR" 2>&1 || die "Failed to mount root"
+    if ! mountpoint -q "$MNT_DIR"; then
+        mount -o subvol=@ /dev/"$VG_NAME"/root "$MNT_DIR"
+    fi
 
     echo "    Mounting /dev/$VG_NAME/root to $MNT_DIR/home (subvol=@home)"
     mkdir -p "$MNT_DIR"/home
-    mount -o subvol=@home /dev/"$VG_NAME"/root "$MNT_DIR"/home 2>&1 || die "Failed to mount home"
+    if ! mountpoint -q "$MNT_DIR"/home; then
+        mount -o subvol=@home /dev/"$VG_NAME"/root "$MNT_DIR"/home
+    fi
 
     echo "    Mounting /dev/$VG_NAME/root to $MNT_DIR/.snapshots (subvol=@snapshots)"
     mkdir -p "$MNT_DIR"/.snapshots
-    mount -o subvol=@snapshots /dev/"$VG_NAME"/root "$MNT_DIR"/.snapshots 2>&1 || die "Failed to mount snapshots"
+    if ! mountpoint -q "$MNT_DIR"/.snapshots; then
+        mount -o subvol=@snapshots /dev/"$VG_NAME"/root "$MNT_DIR"/.snapshots
+    fi
 
     echo "    Mounting /dev/${DISK}1 to $MNT_DIR/boot/efi"
     mkdir -p "$MNT_DIR"/boot/efi
-    mount /dev/"${DISK}1" "$MNT_DIR"/boot/efi 2>&1 || die "Failed to mount efi"
+    if ! mountpoint -q "$MNT_DIR"/boot/efi; then
+        mount /dev/"${DISK}1" "$MNT_DIR"/boot/efi
+    fi
 
     echo "==> Filesystems mounted"
 }

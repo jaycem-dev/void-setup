@@ -15,7 +15,7 @@ prompt_username() {
 
 setup_keymap() {
 	echo "==> Configuring keymap..."
-	if grep -q "^KEYMAP=" "$MNT_DIR/etc/rc.conf" 2>/dev/null; then
+	if grep -q "^KEYMAP=" "$MNT_DIR/etc/rc.conf"; then
 		sed -i 's|^KEYMAP=.*|KEYMAP="i386/colemak/mod-dh-iso-us"|' "$MNT_DIR/etc/rc.conf"
 	else
 		echo 'KEYMAP="i386/colemak/mod-dh-iso-us"' >>"$MNT_DIR/etc/rc.conf"
@@ -119,11 +119,8 @@ install_pkgs() {
 install_flatpak_pkgs() {
 	echo "==> Installing flatpak packages..."
 	$XCHROOT bash -c '
-        # Start D-Bus if not running
         mkdir -p /run/dbus
-        if [ ! -f /run/dbus/system_bus_socket ]; then
-            dbus-daemon --system --fork 2>/dev/null || true
-        fi
+        dbus-daemon --system --fork
     '
 	$XCHROOT flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 	$XCHROOT flatpak install -y flathub \

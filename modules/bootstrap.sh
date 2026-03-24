@@ -134,7 +134,7 @@ install_base() {
 	echo "==> Installing base system from $REPO_URL..."
 
 	mkdir -p "$MNT_DIR"/var/db/xbps/keys
-	cp /var/db/xbps/keys/* "$MNT_DIR"/var/db/xbps/keys/ 2>/dev/null || true
+	cp /var/db/xbps/keys/* "$MNT_DIR"/var/db/xbps/keys/
 
 	xbps-install -Sy -R "$REPO_URL" -r "$MNT_DIR" \
 		void-repo-nonfree \
