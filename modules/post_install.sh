@@ -23,6 +23,10 @@ setup_keymap() {
 }
 
 install_pkgs() {
+
+    echo "==> Updating system..."
+    $XCHROOT xbps-install -Suy
+
     echo "==> Installing packages..."
     local pkgs=(
         neovim
