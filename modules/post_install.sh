@@ -114,6 +114,33 @@ install_pkgs() {
     echo "==> Packages installed"
 }
 
+install_flatpak_pkgs() {
+    echo "==> Installing flatpak packages..."
+    $XCHROOT bash -c '
+        # Start D-Bus if not running
+        mkdir -p /run/dbus
+        if [ ! -f /run/dbus/system_bus_socket ]; then
+            dbus-daemon --system --fork 2>/dev/null || true
+        fi
+    '
+    $XCHROOT flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+    $XCHROOT flatpak install -y flathub \
+        org.localsend.localsend_app \
+        net.ankiweb.Anki \
+        io.ente.photos \
+        com.moonlight_stream.Moonlight \
+        org.cryptomator.Cryptomator \
+        app.grayjay.Grayjay \
+        com.heroicgameslauncher.hgl \
+        net.davidotek.pupgui2 \
+        net.shadps4.shadPS4 \
+        com.brave.Browser \
+        app.zen_browser.zen \
+        com.github.tchx84.Flatseal
+
+    echo "==> Flatpak packages installed"
+}
+
 setup_dotfiles() {
     echo "==> Setting up dotfiles..."
     local dotfiles_dir="/home/$USERNAME/dev/dotfiles"
@@ -160,6 +187,7 @@ post_main() {
     prompt_username
     setup_keymap
     install_pkgs
+    install_flatpak_pkgs
     setup_dotfiles
 
     echo "==> Post-install configuration complete"
