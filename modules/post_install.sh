@@ -60,8 +60,13 @@ post_main() {
 	if [[ -n "$XCHROOT" ]]; then
 		echo ""
 		warn "This assumes the system was installed using this script."
+		if [[ -z "$DISK" ]]; then
+			prompt_disk
+		else
+			DISK_PATH=$(get_disk_path "$DISK")
+		fi
 		echo "==> Opening LUKS container..."
-		cryptsetup luksOpen /dev/"${DISK}2" "$VG_NAME"
+		cryptsetup luksOpen "${DISK_PATH}2" "$VG_NAME"
 
 		echo "==> Activating LVM volumes..."
 		vgchange -ay

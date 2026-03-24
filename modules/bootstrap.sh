@@ -56,15 +56,6 @@ install_bootloader() {
 	echo "==> Bootloader installation complete"
 }
 
-prompt_disk() {
-	echo ""
-	echo "Available drives:"
-	lsblk -o NAME,SIZE,TYPE | grep -E '^NAME|disk'
-	echo ""
-	read -rp "Target disk (e.g., sda, nvme0n1): " DISK
-	[[ -n "$DISK" ]] || die "Disk is required"
-}
-
 prompt_hostname() {
 	read -rp "Hostname (default: void): " hostname_input
 	HOSTNAME="${hostname_input:-void}"
@@ -79,18 +70,6 @@ check_dependencies() {
 	check_command xbps-install
 	check_command xchroot
 	check_command xgenfstab
-}
-
-get_disk_path() {
-	local disk="$1"
-	local disk_path
-	if [[ "$disk" == /dev/* ]]; then
-		disk_path="$disk"
-	else
-		disk_path="/dev/$disk"
-	fi
-	[[ -b "$disk_path" ]] || die "$disk_path is not a block device"
-	echo "$disk_path"
 }
 
 partition_disk() {
@@ -198,7 +177,6 @@ bootstrap_main() {
 
 	prompt_disk
 	prompt_hostname
-	DISK_PATH=$(get_disk_path "$DISK")
 
 	partition_disk "$DISK_PATH"
 	setup_luks "${DISK_PATH}2"
