@@ -137,6 +137,7 @@ install_base() {
 	cp /var/db/xbps/keys/* "$MNT_DIR"/var/db/xbps/keys/ 2>/dev/null || true
 
 	xbps-install -Sy -R "$REPO_URL" -r "$MNT_DIR" \
+		void-repo-nonfree \
 		base-system \
 		lvm2 \
 		cryptsetup \

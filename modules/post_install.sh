@@ -28,11 +28,14 @@ install_pkgs() {
         neovim
         btop
         impala
+        bluetui
         fish-shell
         fzf
         trash-cli
         tldr
         tmux
+        eza
+        flatpak
         ripgrep
         zoxide
         yt-dlp
@@ -46,51 +49,46 @@ install_pkgs() {
         jq
         ImageMagick
         typst
+        wiremix
+        ddcutil
+        beets
+        libnotify
         7zip
         fwupd
         fastfetch
-        # missing
-        # lsfg-vk
-        # sunshine
-        # opencode
+        playerctl
 
         # desktop
+        gnome-keyring seahorse
+        polkit-gnome
         Signal-Desktop
+        thunar thunar-archive-plugin thunar-volman
+        power-profiles-daemon
+        virt-manager
+        jellyfin-desktop
         gimp
         mpv
         libreoffice
         transmission
         kitty
-        # missing
-        # cryptomator
-        # ente-desktop
-        # grayjay
-        # localsend
+        ghostty
 
         ### browser ###
         firefox
-        # missing
-        # brave
-        # zen-browser
 
         ### gaming ###
         steam
         gamemode
         gamescope
         dolphin-emu
-        # missing
-        # shadps4
-        # gopher64
-        # heroic-games-launcher
-        # protonup
-        # pcsx2
 
         ### fonts ###
         noto-fonts-ttf
         noto-fonts-ttf-extra
         noto-fonts-emoji
-        # missing
-        # ttf-jetbrains-mono
+        liberation-fonts-ttf # Times, Arial and Courier
+        dejavu_fonts-ttf
+        nerd-fonts-symbols-ttf
 
         udiskie
         pavucontrol
@@ -108,44 +106,9 @@ install_pkgs() {
         podman-compose
         android-tools
         github-cli
-        # missing
-        # bun
 
         # editors
         neovim
-        helix
-
-        # languages
-        go
-
-        # lsp
-        pyright
-        rust-analyzer
-        gopls
-        bash-language-server
-        yaml-language-server
-        lua-language-server
-        taplo
-        # missing
-        # astrojs-language-server
-        # vscode-langservers-extracted
-        # typescript-language-server
-        # marksman
-        # tailwindcss-language-server
-
-        # formatters
-        ruff
-        shfmt
-        StyLua
-        black
-        # missing
-        # prettier
-        # python-djlint
-
-        # linters
-        shellcheck
-        # missing
-        # eslint
     )
     $XCHROOT xbps-install -Sy "${pkgs[@]}"
     echo "==> Packages installed"
