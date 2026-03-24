@@ -7,9 +7,6 @@ A script to bootstrap a UEFI Void Linux installation with BTRFS and encryption.
 
 ## Install
 
-> [!WARNING]
-> Bootstrap (option 1 or 3) must be run as root.
-
 **Installer options:**
 
 1. Install Void Linux (bootstrap only)
@@ -17,15 +14,8 @@ A script to bootstrap a UEFI Void Linux installation with BTRFS and encryption.
 3. Run both (full install)
 
 ```bash
-sudo xbps-install -S wget
-wget -O - https://raw.githubusercontent.com/jaycem-dev/void-setup/master/install.sh | bash
-```
-
-Or clone and run manually:
-
-```bash
 sudo xbps-install -S git
 git clone https://github.com/jaycem-dev/void-setup
 cd void-setup
-bash main.sh  # needs sudo or root for options 1 or 3
+sudo bash main.sh
 ```
