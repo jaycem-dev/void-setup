@@ -57,8 +57,9 @@ setup_network() {
 	echo '[device]
 wifi.backend=iwd' >"$MNT_DIR"/etc/NetworkManager/conf.d/wifi_backend.conf
 
-	xchroot "$MNT_DIR" ln -s /etc/sv/dbus /var/service/
-	xchroot "$MNT_DIR" ln -s /etc/sv/NetworkManager /var/service/
+	xchroot "$MNT_DIR" mkdir -p /etc/runit/runsvdir/default
+	xchroot "$MNT_DIR" ln -s /etc/sv/dbus /etc/runit/runsvdir/default/dbus
+	xchroot "$MNT_DIR" ln -s /etc/sv/NetworkManager /etc/runit/runsvdir/default/NetworkManager
 
 	echo "==> Network setup complete"
 }
