@@ -28,11 +28,11 @@ configure_system() {
 
 setup_users() {
 	echo "==> Setting up users..."
-	echo "root:$ROOT_PASS" | xchroot "$MNT_DIR" chpasswd
-	echo "$USERNAME:$ROOT_PASS" | xchroot "$MNT_DIR" chpasswd
 
 	xchroot "$MNT_DIR" useradd -m -G wheel,users,audio,video,kvm,xbuilder,network "$USERNAME"
-	echo "$USERNAME:$ROOT_PASS" | xchroot "$MNT_DIR" chpasswd
+
+	xchroot "$MNT_DIR" bash -c "echo 'root:$ROOT_PASS' | chpasswd"
+	xchroot "$MNT_DIR" bash -c "echo '$USERNAME:$ROOT_PASS' | chpasswd"
 
 	sed -i 's/^# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/' "$MNT_DIR"/etc/sudoers
 
