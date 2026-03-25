@@ -47,8 +47,9 @@ wifi.backend=iwd' >"$MNT_DIR"/etc/NetworkManager/conf.d/wifi_backend.conf
     mkdir -p "$MNT_DIR"/etc/runit/runsvdir/default
 
     xchroot "$MNT_DIR" bash -c "
-		ln -s /etc/sv/dbus /etc/runit/runsvdir/default/dbus
-		ln -s /etc/sv/NetworkManager /etc/runit/runsvdir/default/NetworkManager
+		ln -sf /etc/sv/dbus /etc/runit/runsvdir/default/dbus
+		ln -sf /etc/sv/NetworkManager /etc/runit/runsvdir/default/NetworkManager
+		ln -sf /run/NetworkManager/resolv.conf /etc/resolv.conf
 	"
 
     echo "==> Network setup complete"
