@@ -72,8 +72,14 @@ prompt_hostname() {
 prompt_users() {
 	read -rp "Regular user: " USERNAME
 	[[ -n "$USERNAME" ]] || die "Username is required"
-	read -srp "Password (used for root, user and encryption): " ROOT_PASS
-	echo ""
+	while true; do
+		read -srp "Password (used for root, user and encryption): " ROOT_PASS
+		echo ""
+		read -srp "Confirm password: " ROOT_PASS_CONFIRM
+		echo ""
+		[[ "$ROOT_PASS" = "$ROOT_PASS_CONFIRM" ]] && break
+		echo "Passwords do not match. Try again."
+	done
 }
 
 check_dependencies() {
@@ -159,7 +165,8 @@ install_base() {
 		btrfs-progs \
 		xtools \
 		NetworkManager \
-		iwd
+		iwd \
+		shadow
 
 	echo "==> Base system installed"
 }
