@@ -48,7 +48,6 @@ install_pkgs() {
         bat
         fd
         keyd
-        openssh
         less
         jq
         ImageMagick
@@ -95,11 +94,9 @@ install_pkgs() {
         nerd-fonts-symbols-ttf
 
         udiskie
-        pavucontrol
         nwg-look
 
         ### dev ###
-        # tools
         git
         tree-sitter
         lazygit
@@ -108,14 +105,35 @@ install_pkgs() {
         podman-compose
         android-tools
         github-cli
-
-        # editors
-        neovim
     )
     $XCHROOT xbps-install -Sy "${pkgs[@]}"
     echo "==> Packages installed"
 }
 
+setup_ssh() {
+    echo "==> Setting up SSH..."
+
+    $XCHROOT xbps-install -Sy openssh
+    $XCHROOT ln -sf /etc/sv/sshd /etc/runit/runsvdir/default/sshd
+
+    echo "==> SSH setup complete"
+}
+
+setup_multimedia() {
+    echo "==> Setting up multimedia..."
+
+    $XCHROOT xbps-install -Sy pipewire wireplumber alsa-pipewire pipewire-pulse libspa-bluetooth
+
+    $XCHROOT mkdir -p /etc/pipewire/pipewire.conf.d /etc/alsa/conf.d
+    $XCHROOT ln -sf /usr/share/examples/wireplumber/10-wireplumber.conf /etc/pipewire/pipewire.conf.d/
+    $XCHROOT ln -sf /usr/share/examples/pipewire/20-pipewire-pulse.conf /etc/pipewire/pipewire.conf.d/
+    $XCHROOT ln -sf /usr/share/alsa/alsa.conf.d/50-pipewire.conf /etc/alsa/conf.d/
+    $XCHROOT ln -sf /usr/share/alsa/alsa.conf.d/99-pipewire-default.conf /etc/alsa/conf.d/
+
+    echo "==> Multimedia setup complete"
+}
+
+# TODO: use void-source-packages where possible
 install_flatpak_pkgs() {
     echo "==> Installing flatpak packages..."
     local pkgs=(
@@ -180,6 +198,8 @@ post_main() {
     install_pkgs
     install_flatpak_pkgs
     setup_dotfiles
+    setup_ssh
+    setup_multimedia
 
     echo "==> Post-install configuration complete"
 }
