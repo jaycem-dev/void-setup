@@ -132,7 +132,8 @@ install_flatpak_pkgs() {
         app.zen_browser.zen
         com.github.tchx84.Flatseal
     )
-    $XCHROOT flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo && flatpak install -y flathub "${pkgs[@]}"
+    $XCHROOT flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+    $XCHROOT flatpak install -y flathub "${pkgs[@]}"
     echo "==> Flatpak packages installed"
 }
 
@@ -144,7 +145,8 @@ setup_dotfiles() {
     else
         $XCHROOT git clone "$DOTFILES_REPO" "$dotfiles_dir"
     fi
-    $XCHROOT ln -sf "$dotfiles_dir" /home/"$USERNAME"/.config && chown -R "$USERNAME" "$dotfiles_dir"
+    $XCHROOT ln -sf "$dotfiles_dir" /home/"$USERNAME"/.config
+    $XCHROOT chown -R "$USERNAME" "$dotfiles_dir"
     echo "==> Dotfiles setup complete"
 }
 
