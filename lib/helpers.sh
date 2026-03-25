@@ -60,6 +60,14 @@ cleanup() {
     echo "==> Done"
 }
 
+detect_env() {
+    if df -h / | grep -q "LiveOS"; then
+        XCHROOT="xchroot $MNT_DIR"
+    else
+        XCHROOT=""
+    fi
+}
+
 mount_filesystems() {
     echo "==> Mounting filesystems to $MNT_DIR..."
 

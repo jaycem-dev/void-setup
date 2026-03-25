@@ -150,15 +150,6 @@ setup_dotfiles() {
     echo "==> Dotfiles setup complete"
 }
 
-detect_env() {
-    # Detect live ISO by checking root filesystem label
-    if df -h / | grep -q "LiveOS"; then
-        XCHROOT="xchroot $MNT_DIR"
-    else
-        XCHROOT=""
-    fi
-}
-
 post_main() {
     detect_env
 

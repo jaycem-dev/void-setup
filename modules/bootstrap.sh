@@ -175,6 +175,7 @@ setup_luks_keyfile() {
 bootstrap_main() {
 	check_root
 	check_dependencies
+	detect_env
 
 	prompt_disk
 	prompt_hostname
