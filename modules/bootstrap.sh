@@ -22,7 +22,7 @@ setup_users() {
         echo root:$ROOT_PASS | chpasswd -m
     "
 
-    sed -i 's/^# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/' "$MNT_DIR"/etc/sudoers
+    sed -i 's/^# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' "$MNT_DIR"/etc/sudoers
 
     echo "==> User setup complete"
 }
