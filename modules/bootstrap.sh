@@ -28,8 +28,8 @@ install_bootloader() {
 	echo "==> Installing Limine bootloader..."
 
 	xchroot "$MNT_DIR" bash -c "
-        mkdir -p /boot/EFI/void
-        cp /usr/share/limine/BOOTX64.EFI /boot/EFI/void/limine-efi.bin
+        mkdir -p /boot/EFI/BOOT
+        cp /usr/share/limine/BOOTX64.EFI /boot/EFI/BOOT/BOOTX64.EFI
     "
 
 	generate_limine_cfg
@@ -52,6 +52,7 @@ wifi.backend=iwd' >"$MNT_DIR"/etc/NetworkManager/conf.d/wifi_backend.conf
 	xchroot "$MNT_DIR" bash -c "
 		ln -sf /etc/sv/dbus /etc/runit/runsvdir/default/dbus
 		ln -sf /etc/sv/NetworkManager /etc/runit/runsvdir/default/NetworkManager
+		rm -f /etc/resolv.conf
 		ln -sf /run/NetworkManager/resolv.conf /etc/resolv.conf
 	"
 
@@ -192,7 +193,7 @@ generate_limine_cfg() {
 	kernel=$(basename "$kernel")
 	initramfs=$(basename "$initramfs")
 
-	cat >"$MNT_DIR"/boot/EFI/void/limine.conf <<LIMINE_EOF
+	cat >"$MNT_DIR"/boot/EFI/BOOT/limine.conf <<LIMINE_EOF
 timeout: 5
 
 / Void Linux
