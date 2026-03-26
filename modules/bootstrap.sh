@@ -45,6 +45,7 @@ setup_network() {
     echo '[device]
 wifi.backend=iwd' >"$MNT_DIR"/etc/NetworkManager/conf.d/wifi_backend.conf
     mkdir -p "$MNT_DIR"/etc/runit/runsvdir/default
+    rm -f "$MNT_DIR"/etc/resolv.conf
 
     xchroot "$MNT_DIR" bash -c "
 		ln -sf /etc/sv/dbus /etc/runit/runsvdir/default/dbus
