@@ -88,10 +88,10 @@ mount_filesystems() {
         mount -o subvol=@snapshots /dev/"$VG_NAME"/root "$MNT_DIR"/.snapshots
     fi
 
-    echo "    Mounting /dev/${DISK}1 to $MNT_DIR/boot/efi"
-    mkdir -p "$MNT_DIR"/boot/efi
-    if ! mountpoint -q "$MNT_DIR"/boot/efi; then
-        mount /dev/"${DISK}1" "$MNT_DIR"/boot/efi
+    echo "    Mounting /dev/${DISK}1 to $MNT_DIR/boot (ESP)"
+    mkdir -p "$MNT_DIR"/boot
+    if ! mountpoint -q "$MNT_DIR"/boot; then
+        mount /dev/"${DISK}1" "$MNT_DIR"/boot
     fi
 
     echo "==> Filesystems mounted"
