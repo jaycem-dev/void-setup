@@ -13,6 +13,14 @@ configure_system() {
     echo "==> System configuration complete"
 }
 
+finalize_setup() {
+    echo "==> Finalization..."
+
+    xchroot "$MNT_DIR" bash -c "
+        xbps-reconfigure -fa
+	"
+}
+
 setup_users() {
     echo "==> Setting up users..."
 
@@ -32,7 +40,6 @@ install_bootloader() {
 
     xchroot "$MNT_DIR" bash -c "
 		grub-install /dev/$DISK
-		xbps-reconfigure -fa
 	"
 
     echo "==> Bootloader installation complete"
@@ -45,12 +52,10 @@ setup_network() {
     echo '[device]
 wifi.backend=iwd' >"$MNT_DIR"/etc/NetworkManager/conf.d/wifi_backend.conf
     mkdir -p "$MNT_DIR"/etc/runit/runsvdir/default
-    rm -f "$MNT_DIR"/etc/resolv.conf
 
     xchroot "$MNT_DIR" bash -c "
 		ln -sf /etc/sv/dbus /etc/runit/runsvdir/default/dbus
 		ln -sf /etc/sv/NetworkManager /etc/runit/runsvdir/default/NetworkManager
-		ln -sf /run/NetworkManager/resolv.conf /etc/resolv.conf
 	"
 
     echo "==> Network setup complete"
@@ -207,6 +212,7 @@ bootstrap_main() {
     install_bootloader
     setup_network
     setup_users
+    finalize_setup
 
     echo ""
     echo "==> Bootstrap complete! System ready for post-install configuration."
