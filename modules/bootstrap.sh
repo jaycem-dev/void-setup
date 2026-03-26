@@ -48,9 +48,12 @@ install_bootloader() {
 setup_network() {
     echo "==> Setting up network..."
 
+    cp /etc/resolv.conf "$MNT_DIR"/etc/resolv.conf
+
     mkdir -p "$MNT_DIR"/etc/NetworkManager/conf.d
     echo '[device]
 wifi.backend=iwd' >"$MNT_DIR"/etc/NetworkManager/conf.d/wifi_backend.conf
+
     mkdir -p "$MNT_DIR"/etc/runit/runsvdir/default
 
     xchroot "$MNT_DIR" bash -c "
