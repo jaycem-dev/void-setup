@@ -17,3 +17,15 @@ A script to bootstrap a UEFI Void Linux installation with BTRFS and encryption.
 sudo xbps-install -Syu xbps git
 git clone https://github.com/jaycem-dev/void-setup && sudo bash void-setup/main.sh
 ```
+
+### Testing the feature branch
+
+To test the new BTRFS+LUKS+UEFI improvements, clone only the `feature/btrfs-luks-uefi` branch:
+
+```bash
+git clone -b feature/btrfs-luks-uefi --single-branch https://github.com/jaycem-dev/void-setup
+cd void-setup
+sudo bash main.sh
+```
+
+> **Note:** This branch is experimental and will be merged into `master` or removed after testing.
