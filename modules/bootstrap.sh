@@ -173,6 +173,8 @@ install_base() {
 generate_fstab() {
     echo "==> Generating fstab..."
     xgenfstab -p "$MNT_DIR" >"$MNT_DIR"/etc/fstab
+    # Add swap entry
+    echo "/dev/$VG_NAME/swap none swap sw 0 0" >>"$MNT_DIR/etc/fstab"
     echo "==> fstab generated"
 }
 
@@ -210,7 +212,6 @@ bootstrap_main() {
     mount_filesystems
     install_base
     generate_fstab
-    echo "/dev/$VG_NAME/swap none swap sw 0 0" >>"$MNT_DIR/etc/fstab"
     configure_system
     setup_luks_keyfile
     install_bootloader
