@@ -124,5 +124,11 @@ All scripts use `trap cleanup EXIT INT TERM` for consistent cleanup.
 - Use `get_disk_path` helper to normalize disk paths
 - Wipe disk before partitioning: `sfdisk --wipe always`
 
+## Git Safety
+
+- **Force push requires explicit user confirmation** - Never use `git push --force` or `git push --force-with-lease` without asking the user first. Rewriting history can break collaborator workflows.
+- **Verify before destructive operations** - Always confirm with the user before running commands that rewrite history (rebase, reset --hard, force push).
+- **Use `--force-with-lease` over `--force`** - When force push is required and confirmed, use `--force-with-lease` for safety.
+
 ## Files Not To Modify
 - `/home/jay/dev/void-setup/apps.md` - Package tracking list (user reference)
