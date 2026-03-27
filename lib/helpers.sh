@@ -73,19 +73,19 @@ mount_filesystems() {
 
 	echo "    Mounting /dev/$VG_NAME/root to $MNT_DIR (subvol=@)"
 	if ! mountpoint -q "$MNT_DIR"; then
-		mount -o subvol=@,$BTRFS_OPTS /dev/"$VG_NAME"/root "$MNT_DIR"
+		mount -o "subvol=@,$BTRFS_OPTS" /dev/"$VG_NAME"/root "$MNT_DIR"
 	fi
 
 	echo "    Mounting /dev/$VG_NAME/root to $MNT_DIR/home (subvol=@home)"
 	mkdir -p "$MNT_DIR"/home
 	if ! mountpoint -q "$MNT_DIR"/home; then
-		mount -o subvol=@home,$BTRFS_OPTS /dev/"$VG_NAME"/root "$MNT_DIR"/home
+		mount -o "subvol=@home,$BTRFS_OPTS" /dev/"$VG_NAME"/root "$MNT_DIR"/home
 	fi
 
 	echo "    Mounting /dev/$VG_NAME/root to $MNT_DIR/.snapshots (subvol=@snapshots)"
 	mkdir -p "$MNT_DIR"/.snapshots
 	if ! mountpoint -q "$MNT_DIR"/.snapshots; then
-		mount -o subvol=@snapshots,$BTRFS_OPTS /dev/"$VG_NAME"/root "$MNT_DIR"/.snapshots
+		mount -o "subvol=@snapshots,$BTRFS_OPTS" /dev/"$VG_NAME"/root "$MNT_DIR"/.snapshots
 	fi
 
 	echo "    Mounting /dev/${DISK}1 to $MNT_DIR/boot/efi"
