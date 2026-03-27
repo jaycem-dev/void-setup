@@ -210,6 +210,7 @@ bootstrap_main() {
 	mount_filesystems
 	install_base
 	generate_fstab
+	echo "/dev/$VG_NAME/swap none swap sw 0 0" >>"$MNT_DIR/etc/fstab"
 	configure_system
 	setup_luks_keyfile
 	install_bootloader
