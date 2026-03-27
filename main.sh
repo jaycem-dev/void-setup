@@ -15,7 +15,7 @@ source "$SCRIPT_DIR/modules/post_install.sh"
 trap cleanup EXIT INT TERM
 
 if [[ "${1:-}" == "-h" ]]; then
-	cat <<EOF
+    cat <<EOF
 Usage: $(basename "$0")
 
 Setup a Void Linux installation with BTRFS and encryption
@@ -38,7 +38,7 @@ EXAMPLES:
     $(basename "$0") <<< "3"
     SWAP_SIZE=8G $(basename "$0")
 EOF
-	exit 1
+    exit 1
 fi
 
 echo ""
@@ -51,17 +51,17 @@ echo ""
 read -rp "Select option (eg: 1): " option
 
 case "$option" in
-1)
-	bootstrap_main
-	;;
-2)
-	post_main
-	;;
-3)
-	bootstrap_main
-	post_main
-	;;
-*)
-	die "Invalid option: $option"
-	;;
+    1)
+        bootstrap_main
+        ;;
+    2)
+        post_main
+        ;;
+    3)
+        bootstrap_main
+        post_main
+        ;;
+    *)
+        die "Invalid option: $option"
+        ;;
 esac
