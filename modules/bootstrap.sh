@@ -161,7 +161,7 @@ install_base() {
 		base-system \
 		lvm2 \
 		cryptsetup \
-		grub-x86_64-efi \
+		grub-"$ARCH"-efi \
 		btrfs-progs \
 		xtools \
 		NetworkManager \
