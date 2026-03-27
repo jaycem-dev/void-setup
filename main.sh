@@ -15,7 +15,7 @@ source "$SCRIPT_DIR/modules/post_install.sh"
 trap cleanup EXIT INT TERM
 
 if [[ "${1:-}" == "-h" ]]; then
-    cat <<EOF
+	cat <<EOF
 Usage: $(basename "$0")
 
 Setup a Void Linux installation with BTRFS and encryption
@@ -30,13 +30,15 @@ ENVIRONMENT VARIABLES:
     EFI_SIZE    EFI partition size (default: 1G)
     SWAP_SIZE   Swap size (default: 4G)
     REPO_URL    XBPS repository URL (default: repo-fastly.voidlinux.org)
+    ARCH        Target architecture for GRUB (default: x86_64)
+    BTRFS_OPTS  BTRFS mount options (default: compress=zstd,noatime,discard=async)
 
 EXAMPLES:
     $(basename "$0")
     $(basename "$0") <<< "3"
     SWAP_SIZE=8G $(basename "$0")
 EOF
-    exit 1
+	exit 1
 fi
 
 echo ""
@@ -50,16 +52,16 @@ read -rp "Select option (eg: 1): " option
 
 case "$option" in
 1)
-    bootstrap_main
-    ;;
+	bootstrap_main
+	;;
 2)
-    post_main
-    ;;
+	post_main
+	;;
 3)
-    bootstrap_main
-    post_main
-    ;;
+	bootstrap_main
+	post_main
+	;;
 *)
-    die "Invalid option: $option"
-    ;;
+	die "Invalid option: $option"
+	;;
 esac
