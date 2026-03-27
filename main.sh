@@ -29,9 +29,11 @@ ENVIRONMENT VARIABLES:
     VG_NAME     Volume group name (default: cryptroot)
     EFI_SIZE    EFI partition size (default: 1G)
     SWAP_SIZE   Swap size (default: 4G)
-    REPO_URL    XBPS repository URL (default: repo-fastly.voidlinux.org)
+    REPO_URL    XBPS repository URL (default: repo-default.voidlinux.org/current)
+    MNT_DIR     Mount point for installation (default: /mnt)
     ARCH        Target architecture for GRUB (default: x86_64)
     BTRFS_OPTS  BTRFS mount options (default: compress=zstd,noatime,discard=async)
+    DOTFILES_REPO Dotfiles repository URL (default: https://github.com/jaycem-dev/dotfiles)
 
 EXAMPLES:
     $(basename "$0")
