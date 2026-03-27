@@ -40,14 +40,14 @@ ls -la *.sh lib/*.sh modules/*.sh
 
 ### Formatting (shfmt)
 ```bash
-# Format all scripts with shfmt (default tab indentation)
-shfmt -w main.sh lib/*.sh modules/*.sh
+# Format all scripts with 4-space indentation
+shfmt -w -i 4 -ci main.sh lib/*.sh modules/*.sh
 
 # Check formatting without modifying files
-shfmt -l main.sh lib/*.sh modules/*.sh
+shfmt -l -i 4 -ci main.sh lib/*.sh modules/*.sh
 
 # View diff of formatting changes
-shfmt -d main.sh lib/*.sh modules/*.sh
+shfmt -d -i 4 -ci main.sh lib/*.sh modules/*.sh
 ```
 
 ## Code Style Guidelines
@@ -59,7 +59,7 @@ shfmt -d main.sh lib/*.sh modules/*.sh
 - Prefer `[[ ]]` over `[ ]` for conditionals
 
 ### Formatting
-- Use tab indentation (shfmt default)
+- Use 4-space indentation (shfmt -i 4 -ci)
 - Keep lines under 100 characters when reasonable
 - Add blank lines between function definitions
 - Use consistent spacing around operators: `[[ "$var" = "value" ]]`
