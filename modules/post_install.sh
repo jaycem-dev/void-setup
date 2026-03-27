@@ -5,201 +5,201 @@
 # This allows post installation to run on a live ISO or an installed system
 
 prompt_username() {
-    if [[ -z "$USERNAME" ]]; then
-        echo "Username variable not set"
-        read -rp "Username of the user created (eg: void): " USERNAME
-    else
-        echo "Username created: $USERNAME"
-    fi
+	if [[ -z "$USERNAME" ]]; then
+		echo "Username variable not set"
+		read -rp "Username of the user created (eg: void): " USERNAME
+	else
+		echo "Username created: $USERNAME"
+	fi
 }
 
 setup_keymap() {
-    echo "==> Configuring keymap..."
-    if grep -q "^KEYMAP=" "$MNT_DIR/etc/rc.conf"; then
-        sed -i 's|^KEYMAP=.*|KEYMAP="i386/colemak/mod-dh-iso-us"|' "$MNT_DIR/etc/rc.conf"
-    else
-        echo 'KEYMAP="i386/colemak/mod-dh-iso-us"' >>"$MNT_DIR/etc/rc.conf"
-    fi
+	echo "==> Configuring keymap..."
+	if grep -q "^KEYMAP=" "$MNT_DIR/etc/rc.conf"; then
+		sed -i 's|^KEYMAP=.*|KEYMAP="i386/colemak/mod-dh-iso-us"|' "$MNT_DIR/etc/rc.conf"
+	else
+		echo 'KEYMAP="i386/colemak/mod-dh-iso-us"' >>"$MNT_DIR/etc/rc.conf"
+	fi
 }
 
 install_pkgs() {
 
-    echo "==> Updating system..."
-    $XCHROOT xbps-install -Suy
+	echo "==> Updating system..."
+	$XCHROOT xbps-install -Suy
 
-    echo "==> Installing packages..."
-    local pkgs=(
-        neovim
-        btop
-        impala
-        bluetui
-        fish-shell
-        fzf
-        trash-cli
-        tldr
-        tmux
-        eza
-        flatpak
-        ripgrep
-        zoxide
-        yt-dlp
-        ffmpeg
-        yazi
-        bat
-        fd
-        keyd
-        less
-        jq
-        ImageMagick
-        typst
-        wiremix
-        ddcutil
-        beets
-        libnotify
-        7zip
-        fwupd
-        fastfetch
-        playerctl
+	echo "==> Installing packages..."
+	local pkgs=(
+		neovim
+		btop
+		impala
+		bluetui
+		fish-shell
+		fzf
+		trash-cli
+		tldr
+		tmux
+		eza
+		flatpak
+		ripgrep
+		zoxide
+		yt-dlp
+		ffmpeg
+		yazi
+		bat
+		fd
+		keyd
+		less
+		jq
+		ImageMagick
+		typst
+		wiremix
+		ddcutil
+		beets
+		libnotify
+		7zip
+		fwupd
+		fastfetch
+		playerctl
 
-        # desktop
-        gnome-keyring seahorse
-        polkit-gnome
-        Signal-Desktop
-        Thunar thunar-archive-plugin thunar-volman
-        power-profiles-daemon
-        virt-manager
-        jellyfin-desktop
-        gimp
-        mpv
-        libreoffice
-        transmission
-        kitty
-        ghostty
+		# desktop
+		gnome-keyring seahorse
+		polkit-gnome
+		Signal-Desktop
+		Thunar thunar-archive-plugin thunar-volman
+		power-profiles-daemon
+		virt-manager
+		jellyfin-desktop
+		gimp
+		mpv
+		libreoffice
+		transmission
+		kitty
+		ghostty
 
-        ### browser ###
-        firefox
+		### browser ###
+		firefox
 
-        ### gaming ###
-        steam
-        gamemode
-        gamescope
-        dolphin-emu
+		### gaming ###
+		steam
+		gamemode
+		gamescope
+		dolphin-emu
 
-        ### fonts ###
-        noto-fonts-ttf
-        noto-fonts-ttf-extra
-        noto-fonts-emoji
-        liberation-fonts-ttf # Times, Arial and Courier
-        dejavu-fonts-ttf
-        nerd-fonts-symbols-ttf
+		### fonts ###
+		noto-fonts-ttf
+		noto-fonts-ttf-extra
+		noto-fonts-emoji
+		liberation-fonts-ttf # Times, Arial and Courier
+		dejavu-fonts-ttf
+		nerd-fonts-symbols-ttf
 
-        udiskie
-        nwg-look
+		udiskie
+		nwg-look
 
-        ### dev ###
-        git
-        tree-sitter
-        lazygit
-        nodejs
-        podman
-        podman-compose
-        android-tools
-        github-cli
-    )
-    $XCHROOT xbps-install -Sy "${pkgs[@]}"
-    echo "==> Packages installed"
+		### dev ###
+		git
+		tree-sitter
+		lazygit
+		nodejs
+		podman
+		podman-compose
+		android-tools
+		github-cli
+	)
+	$XCHROOT xbps-install -Sy "${pkgs[@]}"
+	echo "==> Packages installed"
 }
 
 setup_ssh() {
-    echo "==> Setting up SSH..."
+	echo "==> Setting up SSH..."
 
-    $XCHROOT xbps-install -Sy openssh
-    $XCHROOT ln -sf /etc/sv/sshd /etc/runit/runsvdir/default/sshd
+	$XCHROOT xbps-install -Sy openssh
+	$XCHROOT ln -sf /etc/sv/sshd /etc/runit/runsvdir/default/sshd
 
-    echo "==> SSH setup complete"
+	echo "==> SSH setup complete"
 }
 
 setup_multimedia() {
-    echo "==> Setting up multimedia..."
+	echo "==> Setting up multimedia..."
 
-    $XCHROOT xbps-install -Sy pipewire wireplumber alsa-pipewire pipewire-pulse libspa-bluetooth
+	$XCHROOT xbps-install -Sy pipewire wireplumber alsa-pipewire pipewire-pulse libspa-bluetooth
 
-    $XCHROOT mkdir -p /etc/pipewire/pipewire.conf.d /etc/alsa/conf.d
-    $XCHROOT ln -sf /usr/share/examples/wireplumber/10-wireplumber.conf /etc/pipewire/pipewire.conf.d/
-    $XCHROOT ln -sf /usr/share/examples/pipewire/20-pipewire-pulse.conf /etc/pipewire/pipewire.conf.d/
-    $XCHROOT ln -sf /usr/share/alsa/alsa.conf.d/50-pipewire.conf /etc/alsa/conf.d/
-    $XCHROOT ln -sf /usr/share/alsa/alsa.conf.d/99-pipewire-default.conf /etc/alsa/conf.d/
+	$XCHROOT mkdir -p /etc/pipewire/pipewire.conf.d /etc/alsa/conf.d
+	$XCHROOT ln -sf /usr/share/examples/wireplumber/10-wireplumber.conf /etc/pipewire/pipewire.conf.d/
+	$XCHROOT ln -sf /usr/share/examples/pipewire/20-pipewire-pulse.conf /etc/pipewire/pipewire.conf.d/
+	$XCHROOT ln -sf /usr/share/alsa/alsa.conf.d/50-pipewire.conf /etc/alsa/conf.d/
+	$XCHROOT ln -sf /usr/share/alsa/alsa.conf.d/99-pipewire-default.conf /etc/alsa/conf.d/
 
-    echo "==> Multimedia setup complete"
+	echo "==> Multimedia setup complete"
 }
 
 # TODO: use void-source-packages where possible
 install_flatpak_pkgs() {
-    echo "==> Installing flatpak packages..."
-    local pkgs=(
-        org.localsend.localsend_app
-        net.ankiweb.Anki
-        io.ente.photos
-        com.moonlight_stream.Moonlight
-        org.cryptomator.Cryptomator
-        app.grayjay.Grayjay
-        com.heroicgameslauncher.hgl
-        net.davidotek.pupgui2
-        net.shadps4.shadPS4
-        com.brave.Browser
-        app.zen_browser.zen
-        com.github.tchx84.Flatseal
-    )
-    $XCHROOT flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-    $XCHROOT flatpak install -y flathub "${pkgs[@]}"
-    echo "==> Flatpak packages installed"
+	echo "==> Installing flatpak packages..."
+	local pkgs=(
+		org.localsend.localsend_app
+		net.ankiweb.Anki
+		io.ente.photos
+		com.moonlight_stream.Moonlight
+		org.cryptomator.Cryptomator
+		app.grayjay.Grayjay
+		com.heroicgameslauncher.hgl
+		net.davidotek.pupgui2
+		net.shadps4.shadPS4
+		com.brave.Browser
+		app.zen_browser.zen
+		com.github.tchx84.Flatseal
+	)
+	$XCHROOT flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+	$XCHROOT flatpak install -y flathub "${pkgs[@]}"
+	echo "==> Flatpak packages installed"
 }
 
 setup_dotfiles() {
-    echo "==> Setting up dotfiles..."
-    local dotfiles_dir="/home/$USERNAME/dev/dotfiles"
-    if $XCHROOT test -d "$dotfiles_dir"; then
-        echo "Dotfiles already exist, skipping clone"
-    else
-        $XCHROOT git clone "$DOTFILES_REPO" "$dotfiles_dir"
-    fi
-    $XCHROOT ln -sf "$dotfiles_dir" /home/"$USERNAME"/.config
-    $XCHROOT chown -R "$USERNAME" "$dotfiles_dir"
-    echo "==> Dotfiles setup complete"
+	echo "==> Setting up dotfiles..."
+	local dotfiles_dir="/home/$USERNAME/dev/dotfiles"
+	if $XCHROOT test -d "$dotfiles_dir"; then
+		echo "Dotfiles already exist, skipping clone"
+	else
+		$XCHROOT git clone "$DOTFILES_REPO" "$dotfiles_dir"
+	fi
+	$XCHROOT ln -sf "$dotfiles_dir" /home/"$USERNAME"/.config
+	$XCHROOT chown -R "$USERNAME" "$dotfiles_dir"
+	echo "==> Dotfiles setup complete"
 }
 
 post_main() {
-    detect_env
+	detect_env
 
-    if [[ -n "$XCHROOT" ]]; then
-        echo ""
-        warn "This assumes the system was installed using this script."
-        if [[ -z "$DISK" ]]; then
-            prompt_disk
-        else
-            DISK_PATH=$(get_disk_path "$DISK")
-        fi
-        echo "==> Opening LUKS container..."
-        if cryptsetup status "$VG_NAME" &>/dev/null; then
-            echo "    LUKS container already open, skipping..."
-        else
-            cryptsetup luksOpen "${DISK_PATH}2" "$VG_NAME"
-        fi
+	if [[ -n "$XCHROOT" ]]; then
+		echo ""
+		warn "This assumes the system was installed using this script."
+		if [[ -z "$DISK" ]]; then
+			prompt_disk
+		else
+			DISK_PATH=$(get_disk_path "$DISK")
+		fi
+		echo "==> Opening LUKS container..."
+		if cryptsetup status "$VG_NAME" &>/dev/null; then
+			echo "    LUKS container already open, skipping..."
+		else
+			cryptsetup luksOpen "${DISK_PATH}2" "$VG_NAME"
+		fi
 
-        echo "==> Activating LVM volumes..."
-        vgchange -ay
+		echo "==> Activating LVM volumes..."
+		vgchange -ay
 
-        mount_filesystems
-    fi
+		mount_filesystems
+	fi
 
-    echo "==> Running post-install configuration..."
-    prompt_username
-    setup_keymap
-    install_pkgs
-    install_flatpak_pkgs
-    setup_dotfiles
-    setup_ssh
-    setup_multimedia
+	echo "==> Running post-install configuration..."
+	prompt_username
+	setup_keymap
+	install_pkgs
+	install_flatpak_pkgs
+	setup_dotfiles
+	setup_ssh
+	setup_multimedia
 
-    echo "==> Post-install configuration complete"
+	echo "==> Post-install configuration complete"
 }
